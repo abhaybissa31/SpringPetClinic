@@ -1,0 +1,41 @@
+name: File Upload Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+     
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Build and Execute Maven Goals
+        run: |
+          mvn clean
+          mvn compile
+          mvn test
+          mvn package
+          mvn install
+          mvn deploy
+          mvn site
+          mvn site-deploy
+          mvn verify
+        continue-on-error: true
+
+      - name: Display Maven Output
+        run: |
+          for goal in clean compile test package install deploy site site-deploy verify; do
+            echo "************ Maven Goal: $goal ************"
+            mvn $goal
+          done
